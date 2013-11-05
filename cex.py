@@ -1,3 +1,5 @@
+import pprint
+
 from libsaas.services import base
 
 class Base(base.Resource):
@@ -12,10 +14,18 @@ class CEX(base.RESTResource):
         base.RESTResource.__init__(self, b)
 
     def ticker(self):
-        self.path = 'ticker/GHC/BTC'
+        self.path = 'ticker/GHS/BTC'
+        return super(CEX, self).get()
+
+    def order_book(self):
+        self.path = 'order_book/GHS/BTC'
         return super(CEX, self).get()
 
 
 if __name__ == '__main__':
+    pp = pprint.PrettyPrinter(indent=4)
+
     o = CEX()
-    print o.ticker()
+
+    pp.pprint(o.ticker())
+    pp.pprint(o.order_book())
