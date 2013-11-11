@@ -3,6 +3,7 @@ import hashlib
 import hmac
 import itertools
 import pprint
+import time
 
 # 3rd party
 from libsaas import http, parsers
@@ -15,9 +16,8 @@ import user
 def parse_text(body, code, headers):
     print "TEXT: {0}".format(body)
 
-_nonce = itertools.count(7)
 def nonce():
-    return _nonce.next()
+    return int(time.time())
 
 def signature():
     n = nonce()
