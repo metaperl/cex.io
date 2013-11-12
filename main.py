@@ -15,5 +15,4 @@ driver.get(base_url)
 driver.find_element_by_class_name('dropdown-toggle').click()
 driver.find_element_by_name('username').send_keys(login.username)
 driver.find_element_by_name('password').send_keys(login.password)
-
-elem.click()
+driver.find_element_by_xpath('//form/button').click()
