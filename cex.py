@@ -72,6 +72,6 @@ if __name__ == '__main__':
     o = CEX()
 
     pp.pprint(o.ticker())
-    pp.pprint(o.order_book())
+    #pp.pprint(o.order_book())
     #pp.pprint(o.balance())
     #pp.pprint(o.trade_history())
