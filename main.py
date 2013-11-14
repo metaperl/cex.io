@@ -29,11 +29,11 @@ driver.find_element_by_name('username').send_keys(login.username)
 driver.find_element_by_name('password').send_keys(login.password)
 driver.find_element_by_xpath('//form/button').click()
 
-def bitcoins():
-    # return float(driver.find_element_by_class_name('balanceraw-BTC').text)
-    return float(driver.find_element_by_id('symbol2-available').text)
+def bitcoins_top():
+    return float(driver.find_element_by_class_name('balanceraw-BTC').text)
 
-print 'btc =', bitcoins()
+def bitcoins_bottom():
+    return float(driver.find_element_by_id('symbol2-available').text)
 
 def element_html(elem):
     return elem.get_attribute('outerHTML')
@@ -68,7 +68,7 @@ def place_order(amount, price):
 
 
 def order_hashes(so):
-    b = bitcoins()
+    b = bitcoins_top()
     amount = min( b / so.ask , so.amount)
     place_order( amount, so.ask )
 
@@ -76,7 +76,7 @@ def main():
     for so in sell_orders():
         order_hashes(so)
         time.sleep(10)
-        print 'Bitcoins remaining', bitcoins()
+        print 'Bitcoins remaining', bitcoins_bottom()
 
 if __name__ == '__main__':
     main()
