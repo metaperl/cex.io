@@ -1,0 +1,62 @@
+* Payplan
+** Unilevel
+*** infinite referral levels
+*** 2 euros spent = 1 point
+*** Ranks
+| Rank        | Pts Req | Time Frame     |   % |
+| distributor |         |                |   0 |
+| supervisor  |     200 | cumulative     | 0.5 |
+| bronze sup  |     500 | cumulative     |   1 |
+| silver sup  |    1250 | within 1 month | 1.5 |
+| gold sup    |    2500 | 3x in 12 mos   |   2 |
+| bronze mgr  |    4000 | 3x in 12 mos   | 2.5 |
+| silver mgr  |    6000 | 3x in 12 mos   |   3 |
+| gold mgr    |    9000 | 3x in 12 mos   | 3.5 |
+|             |         |                |     |
+*** Commissions (2 benefits)
+**** The above commissions are for direct sales
+**** A differential commissions is also paid if your rank is higher than
+the rank of _any_ of your direct affiliates
+** Dual Team (2 benefits)
+*** Package Bonus
+**** Direct commission for all purchases but gold (unilevel only)
+- Bronze 5%
+- Silver 10%
+- Gold 15%
+- VIP 20%
+*** Dual Team Bonus
+**** Units enter your binary for all purchases (including gold)
+***** Payout comes with 25 units on one side and 50 on the other
+- Bronze gets
+- Silver gets 40e
+- Gold gets 60e
+- VIP gets 80e
+***** Unit awards per product
+| Product        | Units |
+| 1g Gold        |     1 |
+| Bronze Package |     5 |
+| Silver Package |    20 |
+| Gold Package   |    50 |
+| VIP Package    |   100 |
+|                |       |
+** Practical Cases
+| Action             | Unilevel direct | Unilevel diff | Dual pkg | Dual Cycle |
+| You buy 1g Au      | 0-6% comm.      | n/a           | n/a      | n/a  |
+| Downline* buys 1g  | n/a             | perhaps       | n/a      | 1 unit     |
+| You buy a package  | n/a             | n/a           | n/a      | n/a        |
+| Downline* buys pkg | 0-6% comm.      | perhaps       | 5-20%    | 40e - 80e  |
+- downline for gold must be someone in your referral network (no spillover)
+- downline for dual team can include spillover
+*** Week 0 - you buy a bronze package and order gold
+*** Week 1 - 2 people below you buy a bronze package at 99e each
+**** Unilevel
+***** direct commission
+you are a distributor in unilevel hence get 0% direct commission
+***** differential
+necessarily out of the question
+**** Dual Team
+***** Package Bonus
+yes 5% times 2 times 99e = 10% of 99e = 9.9e = $13.00 (assuming 1e = $1.30)
+***** Dual Team
+1 unit on each side
+*** Week 2 - 2 people buy 1g gold and 4 people buy a bronze package
