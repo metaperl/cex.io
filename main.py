@@ -22,6 +22,8 @@ pp = pprint.PrettyPrinter(indent=4)
 base_url = 'https://cex.io'
 
 driver = webdriver.Firefox()
+driver.set_window_size(1200,1100)
+
 driver.get(base_url)
 
 driver.find_element_by_class_name('dropdown-toggle').click()
