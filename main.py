@@ -91,9 +91,11 @@ def order_hashes(so):
     place_order( amount, so.ask )
 
 def main():
-    for so in sell_orders():
+    while True:
+        if bitcoins_bottom() < 0.0001:
+            break
+        so = sell_orders().next()
         order_hashes(so)
-        break
 
 if __name__ == '__main__':
     main()
