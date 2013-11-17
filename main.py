@@ -1,3 +1,6 @@
+#!/usr/bin/python
+
+
 # core
 import collections
 import logging
@@ -6,6 +9,7 @@ import time
 
 # 3rd party
 from selenium import webdriver
+from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -35,7 +39,7 @@ def bitcoins_top():
     return float(driver.find_element_by_class_name('balanceraw-BTC').text)
 
 def bitcoins_bottom():
-    return float(driver.find_element_by_id('symbol2-available').text)
+    return float(driver.find_element_by_class_name('symbol2-available').text)
 
 def element_html(elem):
     return elem.get_attribute('outerHTML')
@@ -45,19 +49,32 @@ SellOrder = collections.namedtuple('SellOrder', ['ask', 'amount'])
 def loop_forever():
     while True: pass
 
+def scroll_down():
+    #driver.execute_script("window.scrollTo(0,Math.max(document.documentElement.scrollHeight,document.body.scrollHeight,document.documentElement.clientHeight));");
+    driver.execute_script("window.scrollBy(250, 750)");
 
 def sell_orders():
+    scroll_down()
     #xpath = '//tr[contains(@class,"sell_tr")]'
     xpath = '//table[@id="md-sell"]/tbody/tr'
     print 1
     trs = WebDriverWait(driver, 90).until(
         EC.presence_of_all_elements_located((By.XPATH, xpath)))
-    for i, tr in enumerate(trs):
-        print i
-        #print element_html(tr)
-        tds = [float(td.text) for td in tr.find_elements_by_tag_name('td')]
-        so = SellOrder(*tds[0:2])
-        yield so
+    trs = iter(trs)
+    while True:
+        try:
+            tr = trs.next()
+            _tds = tr.find_elements_by_tag_name('td')
+            tds = []
+            print "tds = {0}".format(pp.pformat(_tds))
+            for td in _tds:
+                tds.append(float(td.text))
+            so = SellOrder(*tds[0:2])
+            yield so
+        except StaleElementReferenceException:
+            continue
+        except StopIteration:
+            pass
 
 def place_order(amount, price):
     driver.find_element_by_id('buy-amount').send_keys(str(amount))
@@ -68,17 +85,15 @@ def place_order(amount, price):
         EC.presence_of_element_located((By.ID, 'confirm-ok')))
     button.click()
 
-
 def order_hashes(so):
-    b = bitcoins_top()
+    b = bitcoins_bottom()
     amount = min( b / so.ask , so.amount)
     place_order( amount, so.ask )
 
 def main():
     for so in sell_orders():
         order_hashes(so)
-        time.sleep(10)
-        print 'Bitcoins remaining', bitcoins_bottom()
+        break
 
 if __name__ == '__main__':
     main()
