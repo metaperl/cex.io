@@ -1,0 +1,2 @@
+username = 'princepawn'
+password = 'somepassword'

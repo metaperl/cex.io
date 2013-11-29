@@ -17,7 +17,6 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 # local
-import cex
 import login
 
 pp = pprint.PrettyPrinter(indent=4)
