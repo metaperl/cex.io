@@ -23,16 +23,18 @@ pp = pprint.PrettyPrinter(indent=4)
 
 
 base_url = 'https://cex.io'
+login_url = base_url + '/signin'
 
 driver = webdriver.Firefox()
 driver.set_window_size(1200,1100)
 
 driver.get(base_url)
+time.sleep(10)
+driver.find_element_by_xpath('//a[@href="/signin"]').click()
 
-driver.find_element_by_class_name('dropdown-toggle').click()
 driver.find_element_by_name('username').send_keys(login.username)
 driver.find_element_by_name('password').send_keys(login.password)
-driver.find_element_by_xpath('//form/button').click()
+driver.find_element_by_xpath('//button[@type="submit"]').click()
 
 def bitcoins_top():
     return float(driver.find_element_by_class_name('balanceraw-BTC').text)
