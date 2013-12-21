@@ -40,7 +40,9 @@ def bitcoins_top():
     return float(driver.find_element_by_class_name('balanceraw-BTC').text)
 
 def bitcoins_bottom():
-    return float(driver.find_element_by_class_name('symbol2-available').text)
+    a = driver.find_element_by_class_name('symbol2-available').text
+    print "available={0}".format(a)
+    return float(a)
 
 def element_html(elem):
     return elem.get_attribute('outerHTML')
@@ -78,7 +80,9 @@ def sell_orders():
             pass
 
 def place_order(amount, price):
+    driver.find_element_by_id('buy-amount').clear()
     driver.find_element_by_id('buy-amount').send_keys(str(amount))
+    driver.find_element_by_id('buy-price').clear()
     driver.find_element_by_id('buy-price').send_keys(str(price))
     driver.find_element_by_xpath(
         '//form[@id="buy"]/fieldset/div/button').click()
@@ -93,7 +97,7 @@ def order_hashes(so):
 
 def main():
     while True:
-        if bitcoins_bottom() < 0.0001:
+        if bitcoins_top() < 0.0001:
             break
         so = sell_orders().next()
         order_hashes(so)
