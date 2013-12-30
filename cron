@@ -1,0 +1,11 @@
+# -- BEGIN cex.io
+
+# Aggressive compound 11pm - 2am and 9am - 5pm, Mon-Thu
+*/12 23,0,1,2 * * 1-4   cd $HOME/Documents/Programming/cex.io ; ./main.py ghs --close
+*/12 9-17     * * 1-4   cd $HOME/Documents/Programming/cex.io ; ./main.py ghs --close
+
+# Moderate compound 3am - 9am and 6pm - 11pm, Mon-Thu
+*/60 3-9      * * 1-4   cd $HOME/Documents/Programming/cex.io ; ./main.py ghs --close
+*/60 18-23    * * 1-4   cd $HOME/Documents/Programming/cex.io ; ./main.py ghs --close
+
+# -- END cex.io
