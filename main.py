@@ -74,7 +74,7 @@ def sell_orders():
     print 1
     trs = WebDriverWait(driver, 90).until(
         EC.presence_of_all_elements_located((By.XPATH, xpath)))
-    trs = iter(trs)
+    trs = reversed(trs)
     while True:
         try:
             tr = trs.next()
@@ -90,9 +90,13 @@ def sell_orders():
         except StopIteration:
             pass
 
+
 def place_order(amount, price):
+
+    amount = str(amount)[:8]
+
     driver.find_element_by_id('buy-amount').clear()
-    driver.find_element_by_id('buy-amount').send_keys(str(amount))
+    driver.find_element_by_id('buy-amount').send_keys(amount)
     driver.find_element_by_id('buy-price').clear()
     driver.find_element_by_id('buy-price').send_keys(str(price))
     driver.find_element_by_xpath(
