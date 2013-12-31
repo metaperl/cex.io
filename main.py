@@ -22,36 +22,47 @@ import config
 import login
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(
+    level = logging.DEBUG,
+    format = "%(lineno)s %(message)s",
+)
 pp = pprint.PrettyPrinter(indent=4)
 
 base_url = 'https://cex.io'
 login_url = base_url + '/signin'
 balance_url = base_url + '/trade/finance'
 
-driver = webdriver.Firefox()
-driver.set_window_size(1200,1100)
+driver = None
 
+def start():
+    global driver
+    driver = webdriver.Firefox()
+    driver.set_window_size(1200,1100)
 
-driver.get(base_url)
+    driver.get(base_url)
 
-time.sleep(20)
+    signin_link = WebDriverWait(driver, 60).until(
+        EC.presence_of_element_located((By.XPATH, '//a[@href="/signin"]')))
+    signin_link.click()
 
-driver.find_element_by_xpath('//a[@href="/signin"]').click()
+    username_input_element = WebDriverWait(driver, 60).until(
+        EC.presence_of_element_located((By.NAME, 'username')))
 
-time.sleep(5)
-
-driver.find_element_by_name('username').send_keys(login.username)
-driver.find_element_by_name('password').send_keys(login.password)
-driver.find_element_by_xpath('//button[@type="submit"]').click()
+    username_input_element.send_keys(login.username)
+    driver.find_element_by_name('password').send_keys(login.password)
+    driver.find_element_by_xpath('//button[@type="submit"]').click()
 
 
 def bitcoins_top():
+    scroll_to_top()
+    val =  float(driver.find_element_by_class_name('balanceraw-BTC').text)
+    logging.debug("BTC top={0}".format(val))
     return float(driver.find_element_by_class_name('balanceraw-BTC').text)
 
 def bitcoins_bottom():
+    scroll_down()
     a = driver.find_element_by_class_name('symbol2-available').text
-    print "available={0}".format(a)
+    print "BTC bottom={0}".format(a)
     return float(a)
 
 def element_html(elem):
@@ -65,17 +76,25 @@ def loop_forever():
 
 def scroll_down():
     #driver.execute_script("window.scrollTo(0,Math.max(document.documentElement.scrollHeight,document.body.scrollHeight,document.documentElement.clientHeight));");
-    driver.execute_script("window.scrollBy(250, 750)");
+    driver.execute_script("window.scrollTo(0, 1200)");
+
+def scroll_to_top():
+    #driver.execute_script("window.scrollTo(0,Math.max(document.documentElement.scrollHeight,document.body.scrollHeight,document.documentElement.clientHeight));");
+    driver.execute_script("window.scrollTo(0, 0)");
 
 def sell_orders():
+
     scroll_down()
     #xpath = '//tr[contains(@class,"sell_tr")]'
-    xpath = '//table[@id="md-sell"]/tbody/tr'
-    print 1
-    trs = WebDriverWait(driver, 90).until(
-        EC.presence_of_all_elements_located((By.XPATH, xpath)))
-    trs = reversed(trs)
     while True:
+
+        logging.debug("Getting sell rows")
+        xpath = '//table[@id="md-sell"]/tbody/tr[position() <= 5]'
+        trs = WebDriverWait(driver, 20).until(
+            EC.presence_of_all_elements_located((By.XPATH, xpath)))
+        trs = reversed(trs)
+
+        logging.debug("Looping through rows")
         try:
             tr = trs.next()
             _tds = tr.find_elements_by_tag_name('td')
@@ -84,16 +103,17 @@ def sell_orders():
             for td in _tds:
                 tds.append(float(td.text))
             so = SellOrder(*tds[0:2])
+            logging.debug("yielding sell order: {0}".format(so))
             yield so
         except StaleElementReferenceException:
+            logging.debug("StaleElementReferenceException!")
             continue
-        except StopIteration:
-            pass
 
 
 def place_order(amount, price):
 
-    amount = str(amount)[:8]
+    #amount = str(amount)[:8]
+    amount = str(amount)
 
     driver.find_element_by_id('buy-amount').clear()
     driver.find_element_by_id('buy-amount').send_keys(amount)
@@ -106,14 +126,20 @@ def place_order(amount, price):
     button.click()
 
 def order_hashes(so):
+    logging.debug("Getting bitcoins")
     b = bitcoins_bottom()
+    logging.debug("calculating amount by dividing {0} by {1}".format(
+        b, so.ask
+    ))
     amount = min( b / so.ask , so.amount)
+    logging.debug("placing order for {0}".format(amount))
     place_order( amount, so.ask )
 
 def maybe_close(close):
     if close: driver.close()
 
 def withdraw(wallet, amount=None, close=False):
+    start()
     driver.get(balance_url)
     time.sleep(10)
     if not amount:
@@ -128,19 +154,27 @@ def withdraw(wallet, amount=None, close=False):
     driver.find_element_by_id('button-BTC').click()
     maybe_close(close)
 
-def ghs(close=False):
+def ghs(close=True):
 
-    try:
+    start()
+
+    def _get_sell_orders():
         while True:
-            if bitcoins_top() < config.balance_threshold:
-                break
-            else:
-                logging.info("Getting sell orders")
-                so = sell_orders().next()
-                logging.info("Ordering hashes")
-                order_hashes(so)
-    except ElementNotVisibleException:
-        print "Element not visible."
+            so = sell_orders().next()
+            if so:
+                return so
+
+    while True:
+        if bitcoins_top() < config.balance_threshold:
+            logging.debug(
+                "Bitcoin balance ({0}) less than {1}. Exiting".format(
+                    bitcoins_top(), config.balance_threshold))
+            break
+        else:
+            logging.info("Getting sell orders")
+            so = _get_sell_orders()
+            logging.info("Ordering hashes")
+            order_hashes(so)
 
     maybe_close(close)
 
